@@ -58,7 +58,14 @@ berkeleyFile    = "Berkeley.txt"
 branfordFile    = "Branford.txt"
 calhounFile     = "Calhoun.txt"
 davenportFile   = "Davenport.txt"
-
+stilesFile      = "Stiles.txt"
+jeFile          = "JE.txt"
+morseFile       = "Morse.txt"
+piersonFile     = "Pierson.txt"
+saybrookFile    = "Saybrook.txt"
+sillimanFile    = "Silliman.txt"
+tdFile          = "TD.txt"
+trumbullFile    = "Trumbull.txt"
 seniorFile      = "Yale%d.txt" %(senior)
 juniorFile      = "Yale%d.txt" %(junior)
 sophomoreFile   = "Yale%d.txt" %(sophomore)
