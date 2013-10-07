@@ -1,5 +1,5 @@
-#!/usr/bin/python2.7
-
+#!/usr/local/bin/python
+import keyring
 from selenium import webdriver
 import selenium.webdriver.support.ui as ui
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -8,7 +8,8 @@ import sys
 import time
 
 # Enter your netID password here
-username, password = "xxxxxx", "xxxxxxx"
+username = "myw5"
+password = keyring.get_password("Yale CAS Login", username)
 
 os.system("clear")
 print "============= Yale Email Miner =============="
@@ -18,21 +19,6 @@ senior      = int(raw_input("Year (YY) when the seniors graduate: "))
 junior      = senior + 1
 sophomore   = junior + 1
 freshman    = sophomore + 1
-
-# Determine which classes to mine
-miningscope = str(raw_input("(1)Freshman (2)Sophomore (3)Junior (4)Senior\nWhich classes to mine: "))
-mSenior = False
-mJunior = False
-mSophomore = False
-mFreshman = False
-if "1" in miningscope:
-    mFreshman = True
-if "2" in miningscope:
-    mSophomore = True
-if "3" in miningscope:
-    mJunior = True
-if "4" in miningscope:
-    mSenior = True
 
 # Start Chrome
 sys.stdout.write("Current Page: ")
@@ -115,13 +101,13 @@ while True:
             continue    
         
         # Sort by class year
-        if mSenior and year == senior:
+        if year == senior:
             seniorFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if mJunior and year == junior:
+        if year == junior:
             juniorFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if mSophomore and year == sophomore:
+        if year == sophomore:
             sophomoreFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if mFreshman and year == freshman:
+        if year == freshman:
             freshmanFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
 
         # Sort by college
@@ -144,6 +130,7 @@ juniorFile.close()
 sophomoreFile.close()
 freshmanFile.close()
 unsureFile.close()
+
 for i in missingEmails:
     print "Missing email: %s" %(i)
 driver.quit()
