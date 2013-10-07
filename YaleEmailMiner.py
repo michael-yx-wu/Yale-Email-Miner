@@ -54,27 +54,23 @@ select = Select(driver.find_element_by_xpath('//*[@id="college_title"]/form/sele
 select.select_by_value("Yale College")
 
 # Different files for each class
-berkeleyFile    = "Berkeley.txt"
-branfordFile    = "Branford.txt"
-calhounFile     = "Calhoun.txt"
-davenportFile   = "Davenport.txt"
-stilesFile      = "Stiles.txt"
-jeFile          = "JE.txt"
-morseFile       = "Morse.txt"
-piersonFile     = "Pierson.txt"
-saybrookFile    = "Saybrook.txt"
-sillimanFile    = "Silliman.txt"
-tdFile          = "TD.txt"
-trumbullFile    = "Trumbull.txt"
-seniorFile      = "Yale%d.txt" %(senior)
-juniorFile      = "Yale%d.txt" %(junior)
-sophomoreFile   = "Yale%d.txt" %(sophomore)
-freshmanFile    = "Yale%d.txt" %(freshman)
-seniorFile      = open(seniorFile, 'w')
-juniorFile      = open(juniorFile, 'w')
-sophomoreFile   = open(sophomoreFile, 'w')
-freshmanFile    = open(freshmanFile, 'w')
-unsureFile      = open("YaleXX.txt", 'w')
+seniorFile      = open("Yale%d.txt" %(senior), 'w')
+juniorFile      = open("Yale%d.txt" %(junior), 'w')
+sophomoreFile   = open("Yale%d.txt" %(sophomore), 'w')
+freshmanFile    = open("Yale%d.txt" %(freshman), 'w')
+unsureFile      = open("YaleClassUnknown.txt", 'w')
+college1        = open("Berkeley.txt", 'w')
+college2        = open("Branford.txt", 'w')
+college3        = open("Calhoun.txt", 'w')
+college4        = open("Davenport.txt", 'w')
+college5        = open("EzraStiles.txt", 'w')
+college6        = open("JonathanEdwards.txt", 'w')
+college7        = open("Morse.txt", 'w')
+college8        = open("Pierson.txt", 'w')
+college9        = open("Saybrook.txt", 'w')
+college10       = open("Silliman.txt", 'w')
+college11       = open("TimothyDwight.txt", 'w')
+college12       = open("Trumbull.txt", 'w')
 
 # Other variables needed for fetching addresses
 wait = ui.WebDriverWait(driver, 5)
@@ -116,9 +112,9 @@ while True:
             year = int(year[year.find("'")+1:])
         except:
             unsureFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-            continue
+            continue    
         
-        # Write to correct file
+        # Sort by class year
         if mSenior and year == senior:
             seniorFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
         if mJunior and year == junior:
@@ -127,6 +123,8 @@ while True:
             sophomoreFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
         if mFreshman and year == freshman:
             freshmanFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
+
+        # Sort by college
 
     # Break when no more pages (using try/catch just in case, the website is broken)
     try:
