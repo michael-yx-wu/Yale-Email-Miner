@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 import keyring
+from getpass import getpass
 from selenium import webdriver
 import selenium.webdriver.support.ui as ui
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -7,12 +8,44 @@ import os
 import sys
 import time
 
-# Enter your netID password here
-username = "myw5"
-password = keyring.get_password("Yale CAS Login", username)
+KeyRingAccountName = "Yale CAS Login"
 
+def prompt_cas_credentials(username):
+    passwords_match = False
+    while not passwords_match:
+        password = getpass("Password: ")
+        check = getpass("Verify Password: ")
+        if password == check:
+            print "Saving " + KeyRingAccountName + " credentials in Keychain"
+            passwords_match = True
+            keyring.set_password(KeyRingAccountName, username, password)
+        else:
+            print "Passwords do not match. Please try again"
+    return password
+
+def sort_by_college(collegeFiles, collegeNames, student):
+    name = student.find_element_by_class_name("student_name").text
+    name = name[name.find(", ")+2:]+" "+name[:name.find(",")]
+    try:
+        email = student.find_element_by_class_name("email").text
+    except:
+        return
+    college = student.find_element_by_class_name("student_info").text
+
+    for i in xrange(0, 11):
+        if collegeNames[i] in college:
+            collegeFiles[i].write((name+","+email+'\n').encode('utf-8'))
+            break
+        
+        
 os.system("clear")
 print "============= Yale Email Miner =============="
+
+# Get login credentials
+username = raw_input("Your CAS Username: ")
+password = keyring.get_password(KeyRingAccountName, username)
+if not password:
+    password = prompt_cas_credentials(username)
 
 # Determine class years
 senior      = int(raw_input("Year (YY) when the seniors graduate: "))
@@ -57,6 +90,9 @@ college9        = open("Saybrook.txt", 'w')
 college10       = open("Silliman.txt", 'w')
 college11       = open("TimothyDwight.txt", 'w')
 college12       = open("Trumbull.txt", 'w')
+yearFiles       = [freshmanFile, sophomoreFile, juniorFile, seniorFile]
+collegeNames    = ["Berkeley", "Branford", "Calhoun", "Davenport", "Stiles", "Edwards", "Morse", "Pierson", "Saybrook", "Silliman", "Timothy", "Trumbull"]
+collegeFiles    = [college1, college2, college3, college4, college5, college6, college7, college8, college9, college10, college11, college12]
 
 # Other variables needed for fetching addresses
 wait = ui.WebDriverWait(driver, 5)
@@ -92,25 +128,26 @@ while True:
             missingEmails.append(name)
             continue
 
-        # Get student class and try to parse to int
+        # Get student class and attempt to sort by class year
+        # If no class year, add name to unsureFile
         year = students[i].find_element_by_class_name("year_container").find_elements_by_tag_name("div")[0].text
         try:
             year = int(year[year.find("'")+1:])
         except:
-            unsureFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-            continue    
-        
-        # Sort by class year
+            year = -1
+            unsureFile.write((nameToWrite+","+email+'\n').encode('utf-8'))   
         if year == senior:
             seniorFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if year == junior:
+        elif year == junior:
             juniorFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if year == sophomore:
+        elif year == sophomore:
             sophomoreFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
-        if year == freshman:
+        elif year == freshman:
             freshmanFile.write((nameToWrite+","+email+'\n').encode('utf-8'))
 
         # Sort by college
+        sort_by_college(collegeFiles, collegeNames, students[i])
+
 
     # Break when no more pages (using try/catch just in case, the website is broken)
     try:
@@ -130,6 +167,8 @@ juniorFile.close()
 sophomoreFile.close()
 freshmanFile.close()
 unsureFile.close()
+for f in collegeFiles:
+    f.close()
 
 for i in missingEmails:
     print "Missing email: %s" %(i)
